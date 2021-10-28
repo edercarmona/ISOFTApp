@@ -1,7 +1,6 @@
-import React, {useState, createRef, useEffect} from 'react';
+import React, {useState, createRef, useEffect, setState} from 'react';
 import {
   StyleSheet,
-  TextInput,
   View,
   Text,
   Image,
@@ -11,8 +10,12 @@ import {
   ScrollView,
   SafeAreaView,
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+import { Button, TextInput } from 'react-native-paper';
 
+ 	
 import Loader from '../Components/Loader';
+import Message from '../Components/Message';
 
 
 const SettingsScreen =  (props) => {
@@ -22,6 +25,10 @@ const SettingsScreen =  (props) => {
   const [user_phone, setUserPhone] = useState('');
   const [user_dire, setUserDire] = useState('');
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const Toggle = () => {
+    setModalVisible(!modalVisible)
+  };
   const [errortext, setErrortext] = useState('');
   const [
     isRegistraionSuccess,
@@ -36,16 +43,28 @@ const SettingsScreen =  (props) => {
 
   useEffect(() => {
     const unsubscribe = props.navigation.addListener('focus', () => {
-      alert('hola');
+      setUserName('');
+      setUserEmail('');
+      setUserDire('');
+      setUserPhone('');
+      setUserPassword('');
+      readData();
+      if(isRegistraionSuccess){
+        setIsRegistraionSuccess(false);
+     }
     });
     return unsubscribe;
   },[props.navigation])
   
   const readData = async () =>{
+    setLoading(true);
   const userToken = await AsyncStorage.getItem('token');
-  console.log(AsyncStorage.getItem('token'));
+  const userEmail = await AsyncStorage.getItem('user_id');
   var url = new URL("http://23.96.1.110/api/show_user");
-    params = {token: userToken,}
+  var params = {
+    token: userToken,
+    user_email: userEmail,
+  }
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
   console.log(url);
   fetch(url, {
@@ -62,15 +81,22 @@ const SettingsScreen =  (props) => {
           console.log(responseJson);
         } else {
           setUserName(responseJson.user_name);
+          setUserEmail(responseJson.user_email);
+          setUserPhone(responseJson.user_phone);
+          setUserDire(responseJson.user_dire);
+          setLoading(false);
         }
       }
     )
     .catch((error) => {
       console.error(error);
+      setLoading(false);
     });
   }
   
-  const handleSubmitButton = () => {
+  const handleSubmitButton = async () => {
+    const userToken = await AsyncStorage.getItem('token');
+    const userEmail = await AsyncStorage.getItem('user_id');
     setErrortext('');
     if (!user_name) {
       setErrortext('Por favor introduzca su nombre');
@@ -95,6 +121,7 @@ const SettingsScreen =  (props) => {
     //Show Loader
     setLoading(true);
     var dataToSend = {
+      token: userToken,
       user_name: user_name,
       user_email: user_email,
       user_phone: user_phone,
@@ -109,7 +136,7 @@ const SettingsScreen =  (props) => {
     }
     formBody = formBody.join('&');
 
-    fetch('http://23.96.1.110/api/register', {
+    fetch('http://23.96.1.110/api/update_user', {
       method: 'POST',
       body: formBody,
       headers: {
@@ -122,14 +149,11 @@ const SettingsScreen =  (props) => {
         setLoading(false);
         console.log(responseJson);
         if( responseJson.hasOwnProperty('error') ) {
-          if( responseJson.error.hasOwnProperty('user_email') ) {
-            setErrortext('Ya existe un usuario Registrado con ese email');
-          }else {
             setErrortext('Su contraseña debe tener almenos 6 caracteres');
-          }
         }else{
           if (responseJson.success == true) {
             setIsRegistraionSuccess(true);
+            setModalVisible(true);
           } else {
             setErrortext(responseJson.message);
           }
@@ -140,29 +164,10 @@ const SettingsScreen =  (props) => {
         console.error(error);
       });
   };
-  if (isRegistraionSuccess) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: '#ffffff',
-          justifyContent: 'center',
-        }}>
-        <Text style={styles.successTextStyle}>
-         Registro Exitoso!!!
-        </Text>navigation
-        <TouchableOpacity
-          style={styles.buttonStyle}
-          activeOpacity={0.5}
-          onPress={() => props.navigation.navigate('LoginScreen')}>
-          <Text style={styles.buttonTextStyle}>Inicar Sesion</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
   return (
     <View style={{flex: 1, backgroundColor: '#FFFFFF'}}>
       <Loader loading={loading} />
+      <Message modalVisible={modalVisible} modalStatus={Toggle} />
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
@@ -176,85 +181,84 @@ const SettingsScreen =  (props) => {
             <TextInput
               style={styles.inputStyle}
               onChangeText={(user_email) => setUserEmail(user_email)}
-              underlineColorAndroid="#f000"
-              placeholder="Email"
-              placeholderTextColor="#8b9cb5"
               keyboardType="email-address"
               ref={emailInputRef}
               returnKeyType="next"
+              value={user_email}
               onSubmitEditing={() =>
                 emailInputRef.current && emailInputRef.current.focus()
               }
               blurOnSubmit={false}
+              editable={false}
+              mode="outlined"
+              label="Email"
             />
           </View>
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
               onChangeText={(user_name) => setUserName(user_name)}
-              underlineColorAndroid="#f000"
-              placeholder="Nombre"
-              placeholderTextColor="#8b9cb5"
               autoCapitalize="sentences"
               returnKeyType="next"
+              value={user_name}
               onSubmitEditing={() =>
                 nameInputRef.current &&
                 nameInputRef.current.focus()
               }
               blurOnSubmit={false}
+              mode="outlined"
+              label="Nombre"
             />
           </View>
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
               onChangeText={(user_password) => setUserPassword(user_password) }
-              underlineColorAndroid="#f000"
-              placeholder="Contraseña"
-              placeholderTextColor="#8b9cb5"
               ref={passwordInputRef}
               returnKeyType="next"
               secureTextEntry={true}
+              value={user_password}
               onSubmitEditing={() =>
                 passwordInputRef.current &&
                 passwordInputRef.current.focus()
               }
               blurOnSubmit={false}
+              mode="outlined"
+              label="Contraseña"
             />
           </View>
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
               onChangeText={(user_phone) => setUserPhone(user_phone)}
-              underlineColorAndroid="#f000"
-              placeholder="Telefono"
-              placeholderTextColor="#8b9cb5"
               keyboardType="numeric"
               ref={phoneInputRef}
               returnKeyType="next"
+              value={user_phone}
               onSubmitEditing={() =>
                 phoneInputRef.current &&
                 phoneInputRef.current.focus()
               }
               blurOnSubmit={false}
+              mode="outlined"
+              label="Telefono"
             />
           </View>
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(user_dire) =>
-                setUserDire(user_dire)
-              }
-              underlineColorAndroid="#f000"
-              placeholder="Dirección"
-              placeholderTextColor="#8b9cb5"
+              onChangeText={(user_dire) => setUserDire(user_dire)}
               autoCapitalize="sentences"
               ref={direInputRef}
               returnKeyType="next"
+              value={user_dire}
               onSubmitEditing={() =>
                 direInputRef.current &&
                 direInputRef.current.focus()
               }
               blurOnSubmit={false}
+              mode="outlined"
+              label="Direccion"
             />
           </View>
           {errortext != '' ? (
@@ -262,19 +266,14 @@ const SettingsScreen =  (props) => {
               {errortext}
             </Text>
           ) : null}
-
-          <TouchableOpacity
-            style={styles.buttonStyleC}
-            activeOpacity={0.5}
-            onPress={() => props.navigation.navigate('HomeScreen')}>
-            <Text style={styles.buttonTextStyle}>Cancelar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.buttonStyle}
-            activeOpacity={0.5}
-            onPress={handleSubmitButton}>
-            <Text style={styles.buttonTextStyle}>Registrar</Text>
-          </TouchableOpacity>
+          <View style={styles.container} >
+            <Button icon="content-save" mode="contained" onPress={handleSubmitButton} style={styles.buttonStyle}>
+            Guardar Cambios            
+            </Button>
+            <Button icon="window-close" mode="contained" onPress={() => props.navigation.navigate('HomeScreen')} style={styles.buttonStyle}>
+            Cancelar            
+            </Button>
+        </View>
         </KeyboardAvoidingView>
       </ScrollView>
     </View>
@@ -285,51 +284,34 @@ export default SettingsScreen;
 const styles = StyleSheet.create({
   SectionStyle: {
     flexDirection: 'row',
-    height: 40,
+    height: 60,
     marginTop: 20,
     marginLeft: 35,
     marginRight: 35,
     margin: 10,
   },
   buttonStyle: {
-    backgroundColor: 'black',
-    borderWidth: 0,
-    color: '#FFFFFF',
-    borderColor: 'black',
     height: 40,
     alignItems: 'center',
-    borderRadius: 30,
+    borderRadius: 10,
     marginLeft: 35,
     marginRight: 35,
     marginTop: 20,
-    marginBottom: 20,
-  },
-  buttonStyleC: {
-    backgroundColor: 'red',
-    borderWidth: 0,
-    color: '#FFFFFF',
-    borderColor: 'red',
-    height: 40,
-    alignItems: 'center',
-    borderRadius: 30,
-    marginLeft: 35,
-    marginRight: 35,
-    marginTop: 20,
-    marginBottom: 20,
+    marginBottom: 25,
   },
   buttonTextStyle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     color: '#FFFFFF',
-    paddingVertical: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
     fontSize: 16,
   },
   inputStyle: {
     flex: 1,
-    color: '#03103e',
     paddingLeft: 15,
     paddingRight: 15,
-    borderWidth: 1,
-    borderRadius: 30,
-    borderColor: '#03103e',
+    borderRadius: 10,
   },
   errorTextStyle: {
     color: 'red',
@@ -341,5 +323,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 18,
     padding: 30,
+  },
+  container: {
+    flexDirection: "row",
+    height: 100,
+    padding: 20,
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 10
   },
 });

@@ -1,7 +1,6 @@
 import React, {useState, createRef} from 'react';
 import {
   StyleSheet,
-  TextInput,
   View,
   Text,
   Image,
@@ -10,6 +9,8 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+
+import { Button, TextInput } from 'react-native-paper';
 
 import Loader from './Components/Loader';
 
@@ -155,9 +156,6 @@ const RegisterScreen = (props) => {
             <TextInput
               style={styles.inputStyle}
               onChangeText={(user_name) => setUserName(user_name)}
-              underlineColorAndroid="#f000"
-              placeholder="Nombre"
-              placeholderTextColor="#8b9cb5"
               autoCapitalize="sentences"
               returnKeyType="next"
               onSubmitEditing={() =>
@@ -165,15 +163,14 @@ const RegisterScreen = (props) => {
                 nameInputRef.current.focus()
               }
               blurOnSubmit={false}
+              mode="outlined"
+              label="Nombre"
             />
           </View>
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
               onChangeText={(user_email) => setUserEmail(user_email)}
-              underlineColorAndroid="#f000"
-              placeholder="Email"
-              placeholderTextColor="#8b9cb5"
               keyboardType="email-address"
               ref={emailInputRef}
               returnKeyType="next"
@@ -181,15 +178,14 @@ const RegisterScreen = (props) => {
                 emailInputRef.current && emailInputRef.current.focus()
               }
               blurOnSubmit={false}
+              mode="outlined"
+              label="Email"
             />
           </View>
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
               onChangeText={(user_password) => setUserPassword(user_password) }
-              underlineColorAndroid="#f000"
-              placeholder="Contraseña"
-              placeholderTextColor="#8b9cb5"
               ref={passwordInputRef}
               returnKeyType="next"
               secureTextEntry={true}
@@ -198,23 +194,24 @@ const RegisterScreen = (props) => {
                 passwordInputRef.current.focus()
               }
               blurOnSubmit={false}
+              mode="outlined"
+              label="Contraseña"
             />
           </View>
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
               onChangeText={(user_phone) => setUserPhone(user_phone)}
-              underlineColorAndroid="#f000"
-              placeholder="Telefono"
-              placeholderTextColor="#8b9cb5"
               keyboardType="numeric"
-              ref={ageInputRef}
+              ref={phoneInputRef}
               returnKeyType="next"
               onSubmitEditing={() =>
                 phoneInputRef.current &&
                 phoneInputRef.current.focus()
               }
               blurOnSubmit={false}
+              mode="outlined"
+              label="Telefono"
             />
           </View>
           <View style={styles.SectionStyle}>
@@ -223,17 +220,16 @@ const RegisterScreen = (props) => {
               onChangeText={(user_dire) =>
                 setUserDire(user_dire)
               }
-              underlineColorAndroid="#f000"
-              placeholder="Dirección"
-              placeholderTextColor="#8b9cb5"
               autoCapitalize="sentences"
-              ref={addressInputRef}
+              ref={direInputRef}
               returnKeyType="next"
               onSubmitEditing={() =>
                 direInputRef.current &&
                 direInputRef.current.focus()
               }
               blurOnSubmit={false}
+              mode="outlined"
+              label="Dirección"
             />
           </View>
           {errortext != '' ? (
@@ -241,12 +237,9 @@ const RegisterScreen = (props) => {
               {errortext}
             </Text>
           ) : null}
-          <TouchableOpacity
-            style={styles.buttonStyle}
-            activeOpacity={0.5}
-            onPress={handleSubmitButton}>
-            <Text style={styles.buttonTextStyle}>Registrar</Text>
-          </TouchableOpacity>
+          <Button icon="account-plus" mode="contained" onPress={handleSubmitButton} style={styles.buttonStyle}>
+          Registrar            
+          </Button>
         </KeyboardAvoidingView>
       </ScrollView>
     </View>
@@ -257,24 +250,20 @@ export default RegisterScreen;
 const styles = StyleSheet.create({
   SectionStyle: {
     flexDirection: 'row',
-    height: 40,
+    height: 60,
     marginTop: 20,
     marginLeft: 35,
     marginRight: 35,
-    margin: 10,
+    margin: 5,
   },
   buttonStyle: {
-    backgroundColor: 'black',
-    borderWidth: 0,
-    color: '#FFFFFF',
-    borderColor: 'black',
     height: 40,
     alignItems: 'center',
-    borderRadius: 30,
+    borderRadius: 10,
     marginLeft: 35,
     marginRight: 35,
     marginTop: 20,
-    marginBottom: 20,
+    marginBottom: 25,
   },
   buttonTextStyle: {
     color: '#FFFFFF',
@@ -283,12 +272,9 @@ const styles = StyleSheet.create({
   },
   inputStyle: {
     flex: 1,
-    color: '#03103e',
     paddingLeft: 15,
     paddingRight: 15,
-    borderWidth: 1,
-    borderRadius: 30,
-    borderColor: '#03103e',
+    borderRadius: 10,
   },
   errorTextStyle: {
     color: 'red',

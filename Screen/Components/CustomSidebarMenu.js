@@ -1,5 +1,6 @@
 import React, {useState, createRef} from 'react';
-import {View, Text, Alert, StyleSheet, Image} from 'react-native';
+import {View,Text, Alert, StyleSheet, Image,} from 'react-native';
+
 
 import {
   DrawerContentScrollView,
@@ -8,18 +9,19 @@ import {
 } from '@react-navigation/drawer';
 
 
+
 import AsyncStorage from '@react-native-community/async-storage';
+
 
 const CustomSidebarMenu = (props) => {
   return (
     <View style={stylesSidebar.sideMenuContainer}>
       <View style={stylesSidebar.profileHeader}>
         <Image style={stylesSidebar.tinyLogo}
-        source={require('../../Image/logo.png')}
+        source={require('../../Image/fuel.png')}
         />
       </View>
       <View style={stylesSidebar.profileHeaderLine} />
-
       <DrawerContentScrollView {...props}>
         <DrawerItemList {...props} />
         <DrawerItem
@@ -93,8 +95,8 @@ export default CustomSidebarMenu;
 
 const stylesSidebar = StyleSheet.create({
   tinyLogo: {
-    width: 150,
-    height: 100,
+    width: "50%",
+    height: 125,
   },
   sideMenuContainer: {
     width: '100%',

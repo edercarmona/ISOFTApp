@@ -1,7 +1,6 @@
 import React, {useState, createRef} from 'react';
 import {
   StyleSheet,
-  TextInput,
   View,
   Text,
   ScrollView,
@@ -10,6 +9,8 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
 } from 'react-native';
+
+import { Button, TextInput } from 'react-native-paper';
 
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -111,8 +112,7 @@ const LoginScreen = ({navigation}) => {
                 onChangeText={(user_email) =>
                   setUserEmail(user_email)
                 }
-                placeholder="Email" 
-                placeholderTextColor="#8b9cb5"
+                mode="outlined"
                 autoCapitalize="none"
                 keyboardType="email-address"
                 returnKeyType="next"
@@ -120,8 +120,9 @@ const LoginScreen = ({navigation}) => {
                   passwordInputRef.current &&
                   passwordInputRef.current.focus()
                 }
-                underlineColorAndroid="#f000"
                 blurOnSubmit={false}
+                mode="outlined"
+                label="Direccion de Correo electronico"
               />
             </View>
             <View style={styles.SectionStyle}>
@@ -130,15 +131,14 @@ const LoginScreen = ({navigation}) => {
                 onChangeText={(user_password) =>
                   setUserPassword(user_password)
                 }
-                placeholder="Contraseña" 
-                placeholderTextColor="#8b9cb5"
+                mode="outlined"
                 keyboardType="default"
                 ref={passwordInputRef}
                 onSubmitEditing={Keyboard.dismiss}
                 blurOnSubmit={false}
-                secureTextEntry={true}
-                underlineColorAndroid="#f000"
                 returnKeyType="next"
+                label="Contraseña"
+                secureTextEntry
               />
             </View>
             {errortext != '' ? (
@@ -146,12 +146,11 @@ const LoginScreen = ({navigation}) => {
                 {errortext}
               </Text>
             ) : null}
-            <TouchableOpacity
-              style={styles.buttonStyle}
-              activeOpacity={0.5}
-              onPress={handleSubmitPress}>
-              <Text style={styles.buttonTextStyle}>Iniciar Sesión</Text>
-            </TouchableOpacity>
+           
+            <Button icon="login" mode="contained" onPress={handleSubmitPress} style={styles.buttonStyle}>
+            Iniciar Sesión
+            </Button>
+            
             <Text
               style={styles.registerTextStyle}
               onPress={() => navigation.navigate('RegisterScreen')}>
@@ -174,7 +173,7 @@ const styles = StyleSheet.create({
   },
   SectionStyle: {
     flexDirection: 'row',
-    height: 40,
+    height: 60,
     marginTop: 20,
     marginLeft: 35,
     marginRight: 35,
@@ -182,13 +181,9 @@ const styles = StyleSheet.create({
   },
 
   buttonStyle: {
-    backgroundColor: 'black',
-    borderWidth: 0,
-    color: '#FFFFFF',
-    borderColor: '#000000',
     height: 40,
     alignItems: 'center',
-    borderRadius: 30,
+    borderRadius: 10,
     marginLeft: 35,
     marginRight: 35,
     marginTop: 20,
@@ -201,12 +196,9 @@ const styles = StyleSheet.create({
   },
   inputStyle: {
     flex: 1,
-    color: '#03103e',
     paddingLeft: 15,
     paddingRight: 15,
-    borderWidth: 1,
-    borderRadius: 30,
-    borderColor: '#03103e',
+    borderRadius: 10,
   },
   registerTextStyle: {
     color: 'black',
