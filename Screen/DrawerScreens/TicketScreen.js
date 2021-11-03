@@ -1,31 +1,46 @@
-import React, {useState, createRef, useEffect, setState} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  KeyboardAvoidingView,
-  Keyboard,
-  TouchableOpacity,
-  ScrollView,
-  SafeAreaView,
-} from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
-import { Button, TextInput } from 'react-native-paper';
-
+import React, { useState, useEffect, createRef} from 'react';
+import { View, Dimensions, Image} from 'react-native';
+import QRCodeScanner from 'react-native-qrcode-scanner';
+import { Button, TextInput,} from 'react-native-paper';
+import styles from './scanStyle'
  	
 import Loader from '../Components/Loader';
 import Message from '../Components/Message';
 
 
-const SettingsScreen =  (props) => {
-  const [user_name, setUserName] = useState('');
-  const [user_email, setUserEmail] = useState('');
-  const [user_password, setUserPassword] = useState('');
-  const [user_phone, setUserPhone] = useState('');
-  const [user_dire, setUserDire] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+const TicketScreen =  (props) => {
+
+  const [scan, setScan] = useState(false);
+  const [ScanResult, setScanResult] = useState(false);
+  const [result, setResult] = useState('');
+  const [num_ticket, setNumTicket] = useState('');
+  const ticketInputRef = createRef();
+  const desccription = 'QR code (abbreviated from Quick Response Code) is the trademark for a type of matrix barcode (or two-dimensional barcode) first designed in 1994 for the automotive industry in Japan. A barcode is a machine-readable optical label that contains information about the item to which it is attached. In practice, QR codes often contain data for a locator, identifier, or tracker that points to a website or application. A QR code uses four standardized encoding modes (numeric, alphanumeric, byte/binary, and kanji) to store data efficiently; extensions may also be used.'
+  
+  const SCREEN_HEIGHT = Dimensions.get("window").height;
+  const SCREEN_WIDTH = Dimensions.get("window").width;
+  const scanBarWidth = SCREEN_WIDTH * 0.46;
+
+
+  const onSuccess = (e) => {
+    const check = e.data.substring(0, 4);
+    console.log('scanned data' + check);
+    setResult(e);
+    setScan(false);
+    setScanResult(true);
+    setNumTicket(result.data);
+};
+
+  const activeQR = () => {
+    setScan(true);
+  };
+
+  const scanAgain = () => {
+    setScan(true);
+    setScanResult(false);
+  };
+
+  /*const [modalVisible, setModalVisible] = useState(false);
   const Toggle = () => {
     setModalVisible(!modalVisible)
   };
@@ -163,132 +178,85 @@ const SettingsScreen =  (props) => {
         setLoading(false);
         console.error(error);
       });
-  };
+  };*/
   return (
-    <View style={{flex: 1, backgroundColor: '#FFFFFF'}}>
-      <Loader loading={loading} />
-      <Message modalVisible={modalVisible} modalStatus={Toggle} />
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{
-          justifyContent: 'center',
-          alignContent: 'center',
-        }}>
+<View style={{flex: 1, backgroundColor: '#FFFFFF', height: "100%"}}>
         <View style={{alignItems: 'center'}}>
-        </View>
-        <KeyboardAvoidingView enabled>
-          <View style={styles.SectionStyle}>
-            <TextInput
-              style={styles.inputStyle}
-              onChangeText={(user_email) => setUserEmail(user_email)}
-              keyboardType="email-address"
-              ref={emailInputRef}
-              returnKeyType="next"
-              value={user_email}
-              onSubmitEditing={() =>
-                emailInputRef.current && emailInputRef.current.focus()
-              }
-              blurOnSubmit={false}
-              editable={false}
-              mode="outlined"
-              label="Email"
-            />
+        <Image
+            source={require('../../Image/logo.png')}
+            style={{
+              width: '50%',
+              height: 100,
+              resizeMode: 'contain',
+              margin: 30,
+            }}
+          />
           </View>
-          <View style={styles.SectionStyle}>
-            <TextInput
+          <TextInput
               style={styles.inputStyle}
-              onChangeText={(user_name) => setUserName(user_name)}
+              onChangeText={(num_ticket) => setNumTicket(num_ticket)}
               autoCapitalize="sentences"
               returnKeyType="next"
-              value={user_name}
+              value={num_ticket}
               onSubmitEditing={() =>
                 nameInputRef.current &&
                 nameInputRef.current.focus()
               }
               blurOnSubmit={false}
               mode="outlined"
-              label="Nombre"
+              label="Ticket"
             />
-          </View>
-          <View style={styles.SectionStyle}>
-            <TextInput
-              style={styles.inputStyle}
-              onChangeText={(user_password) => setUserPassword(user_password) }
-              ref={passwordInputRef}
-              returnKeyType="next"
-              secureTextEntry={true}
-              value={user_password}
-              onSubmitEditing={() =>
-                passwordInputRef.current &&
-                passwordInputRef.current.focus()
-              }
-              blurOnSubmit={false}
-              mode="outlined"
-              label="Contraseña"
-            />
-          </View>
-          <View style={styles.SectionStyle}>
-            <TextInput
-              style={styles.inputStyle}
-              onChangeText={(user_phone) => setUserPhone(user_phone)}
-              keyboardType="numeric"
-              ref={phoneInputRef}
-              returnKeyType="next"
-              value={user_phone}
-              onSubmitEditing={() =>
-                phoneInputRef.current &&
-                phoneInputRef.current.focus()
-              }
-              blurOnSubmit={false}
-              mode="outlined"
-              label="Telefono"
-            />
-          </View>
-          <View style={styles.SectionStyle}>
-            <TextInput
-              style={styles.inputStyle}
-              onChangeText={(user_dire) => setUserDire(user_dire)}
-              autoCapitalize="sentences"
-              ref={direInputRef}
-              returnKeyType="next"
-              value={user_dire}
-              onSubmitEditing={() =>
-                direInputRef.current &&
-                direInputRef.current.focus()
-              }
-              blurOnSubmit={false}
-              mode="outlined"
-              label="Direccion"
-            />
-          </View>
-          {errortext != '' ? (
-            <Text style={styles.errorTextStyle}>
-              {errortext}
-            </Text>
-          ) : null}
+            {!scan && !ScanResult && 
+            <Button icon="camera" mode="contained" onPress={activeQR} style={styles.buttonStyle}>
+              Escanear QR            
+            </Button>
+            }
 
-            <Button icon="content-save" mode="contained" onPress={handleSubmitButton} style={styles.buttonStyle}>
-            Guardar Cambios            
-            </Button>
-            <Button icon="window-close" mode="contained" onPress={() => props.navigation.navigate('HomeScreen')} style={styles.buttonStyle}>
-            Cancelar            
-            </Button>
-        </KeyboardAvoidingView>
-      </ScrollView>
-    </View>
-  );
+            {ScanResult &&
+               
+                    <View>
+                        <Button icon="ticket" mode="contained" onPress={activeQR} style={styles.buttonStyle}>
+                            Registrar Ticket            
+                        </Button>
+                        <Button icon="camera" mode="contained" onPress={scanAgain} style={styles.buttonStyle}>
+                            Volver a escanear QR            
+                        </Button>
+
+                    </View>
+            }
+
+
+            {scan &&
+                <QRCodeScanner
+                    reactivate={true}
+                    showMarker={true}
+                    ref={(node) => { scanner = node }}
+                    onRead={onSuccess}
+                    style={{height: 50, width: 50, 
+                      borderRadius: 30}}
+                     cameraProps={{captureAudio: false}}
+                     containerStyle={{height:10}}
+                      cameraStyle={[{height:10}]}
+                    bottomContent={
+                        <View>
+                            <Button icon="ticket" mode="contained" onPress={() => scanner.reactivate()} style={styles.buttonStyle}>
+                                Registrar Ticket            
+                            </Button>
+                            <Button icon="camera-off" mode="contained" onPress={() => setScan(false)} style={styles.buttonStyle}>
+                                Detener Escanner            
+                            </Button>
+                        </View>
+
+                    }
+                />
+            }
+        </View>
+);
 };
-export default SettingsScreen;
-
+export default TicketScreen;
+/*
 const styles = StyleSheet.create({
-  SectionStyle: {
-    flexDirection: 'row',
-    height: 60,
-    marginTop: 20,
-    marginLeft: 35,
-    marginRight: 35,
-    margin: 10,
-  },
+  
   buttonStyle: {
     height: 40,
     alignItems: 'center',
@@ -331,4 +299,4 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 10
   },
-});
+});*/

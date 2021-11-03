@@ -1,52 +1,25 @@
 import React from 'react';
-import {View, Text, SafeAreaView, FlatList, Card, StyleSheet, StatusBar} from 'react-native';
+import {View, Text, SafeAreaView, FlatList, StyleSheet, StatusBar} from 'react-native';
 
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First Item',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Second Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    title: 'Third Item',
-  },
-];
+import { Avatar, Card, Paragraph } from 'react-native-paper';
 
-const Item = ({ title }) => (
-  
-  <View style={styles.item}>
-    <Text style={styles.title}>{title}</Text>
-  </View>
-);
+const LeftContent = props => <Avatar.Icon {...props} icon="wallet-giftcard" />
 
 
 const HomeScreen = () => {
-
   
-  const renderItem = ({ item }) => (
-    <Item title={item.title} />
-  );
-  
-
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View style={{flex: 1, padding: 16}}>
-        <View
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-         <FlatList
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-      />
-        </View>
+      <View style={{flex: 1}}>
+            <Card mode="elevated">
+            <Card.Title title="Card Title"  left={LeftContent} />
+            <Card.Cover source={{ uri: 'https://gaseolo.blob.core.windows.net/premios/promocion1.png' }} />
+              <Card.Content>
+                <Paragraph>Card content</Paragraph>
+              </Card.Content>
+             
+            </Card>
+            
         <Text
           style={{
             fontSize: 18,
@@ -68,20 +41,5 @@ const HomeScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
-  },
-  item: {
-    backgroundColor: '#f9c2ff',
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-  },
-  title: {
-    fontSize: 32,
-  },
-});
 
 export default HomeScreen;

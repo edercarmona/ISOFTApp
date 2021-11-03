@@ -55,7 +55,8 @@ const styles = StyleSheet.create({
       },
       shadowOpacity: 0.25,
       shadowRadius: 4,
-      elevation: 5
+      elevation: 5,
+      width: "100%"
     },
     button: {
       borderRadius: 10,
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
       textAlign: "center"
     },
     modalText: {
-      marginBottom: 15,
+      marginBottom: 18,
       textAlign: "center"
     }
 });

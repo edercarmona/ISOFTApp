@@ -6,12 +6,39 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 
 
 import HomeScreen from './DrawerScreens/HomeScreen';
+import PromotionScreen from './DrawerScreens/PromotionScreen';
 import SettingsScreen from './DrawerScreens/SettingsScreen';
+import TicketScreen from './DrawerScreens/TicketScreen';
 import CustomSidebarMenu from './Components/CustomSidebarMenu';
 import NavigationDrawerHeader from './Components/NavigationDrawerHeader';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
+
+
+const ticketScreenStack = ({navigation}) => {
+  return (
+    <Stack.Navigator initialRouteName="TicketScreen">
+      <Stack.Screen
+        name="TicketScreen"
+        component={TicketScreen}
+        options={{
+          title: 'Registrar Ticket',
+          headerLeft: () => (
+            <NavigationDrawerHeader navigationProps={navigation} />
+          ),
+          headerStyle: {
+            backgroundColor: '#307ecc', 
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+    </Stack.Navigator>
+  );
+};
 
 const homeScreenStack = ({navigation}) => {
   return (
@@ -21,6 +48,30 @@ const homeScreenStack = ({navigation}) => {
         component={HomeScreen}
         options={{
           title: 'Inicio',
+          headerLeft: () => (
+            <NavigationDrawerHeader navigationProps={navigation} />
+          ),
+          headerStyle: {
+            backgroundColor: '#307ecc', 
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const promotionScreenStack = ({navigation}) => {
+  return (
+    <Stack.Navigator initialRouteName="PromotionScreen">
+      <Stack.Screen
+        name="PromotionScreen"
+        component={PromotionScreen}
+        options={{
+          title: 'Promociones',
           headerLeft: () => (
             <NavigationDrawerHeader navigationProps={navigation} />
           ),
@@ -82,20 +133,20 @@ const DrawerNavigatorRoutes = (props) => {
         options={{drawerLabel: 'Inicio'}}
         component={homeScreenStack}
       />
-      <Drawer.Screen
-        name="ticketScreenStack"
-        options={{drawerLabel: 'Registrar Tickets'}}
-        component={homeScreenStack}
-      />
-      <Drawer.Screen
-        name="puntosScreenStack"
-        options={{drawerLabel: 'Canjear Puntos'}}
-        component={homeScreenStack}
+       <Drawer.Screen
+        name="promocionScreenStack"
+        options={{drawerLabel: 'Promociones'}}
+        component={promotionScreenStack}
       />
       <Drawer.Screen
         name="premiosScreenStack"
         options={{drawerLabel: 'Premios'}}
         component={homeScreenStack}
+      />
+      <Drawer.Screen
+        name="ticketScreenStack"
+        options={{drawerLabel: 'Tickets'}}
+        component={ticketScreenStack}
       />
       <Drawer.Screen
         name="facturacionScreenStack"
