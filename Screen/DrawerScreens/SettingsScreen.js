@@ -1,22 +1,17 @@
-import React, {useState, createRef, useEffect, setState} from 'react';
+import React, {useState, createRef, useEffect } from 'react';
 import {
   StyleSheet,
   View,
   Text,
-  Image,
   KeyboardAvoidingView,
-  Keyboard,
-  TouchableOpacity,
   ScrollView,
-  SafeAreaView,
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-import { Button, TextInput } from 'react-native-paper';
+import { Button, TextInput, Snackbar } from 'react-native-paper';
+import { OrientationLocker, PORTRAIT, LANDSCAPE } from "react-native-orientation-locker";
 
  	
 import Loader from '../Components/Loader';
-import Message from '../Components/Message';
-
 
 const SettingsScreen =  (props) => {
   const [user_name, setUserName] = useState('');
@@ -25,21 +20,19 @@ const SettingsScreen =  (props) => {
   const [user_phone, setUserPhone] = useState('');
   const [user_dire, setUserDire] = useState('');
   const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const Toggle = () => {
-    setModalVisible(!modalVisible)
-  };
+  const [tablet, setTablet] = useState('');
+  const [visible, setVisible] = React.useState(false);
   const [errortext, setErrortext] = useState('');
-  const [
-    isRegistraionSuccess,
-    setIsRegistraionSuccess
-  ] = useState(false);
 
   const emailInputRef = createRef();
   const nameInputRef = createRef();
   const direInputRef = createRef();
   const phoneInputRef = createRef();
   const passwordInputRef = createRef();
+
+  const onToggleSnackBar = () => setVisible(!visible);
+
+  const onDismissSnackBar = () => setVisible(false);
 
   useEffect(() => {
     const unsubscribe = props.navigation.addListener('focus', () => {
@@ -49,12 +42,14 @@ const SettingsScreen =  (props) => {
       setUserPhone('');
       setUserPassword('');
       readData();
-      if(isRegistraionSuccess){
-        setIsRegistraionSuccess(false);
-     }
+      isTablet();
     });
     return unsubscribe;
   },[props.navigation])
+
+  const isTablet = async () => {
+    setTablet(await AsyncStorage.getItem('istablet'));
+  };
   
   const readData = async () =>{
     setLoading(true);
@@ -148,12 +143,12 @@ const SettingsScreen =  (props) => {
       .then((responseJson) => {
         setLoading(false);
         console.log(responseJson);
+        console.log(tablet);
         if( responseJson.hasOwnProperty('error') ) {
             setErrortext('Su contraseña debe tener almenos 6 caracteres');
         }else{
           if (responseJson.success == true) {
-            setIsRegistraionSuccess(true);
-            setModalVisible(true);
+            onToggleSnackBar();
           } else {
             setErrortext(responseJson.message);
           }
@@ -166,8 +161,25 @@ const SettingsScreen =  (props) => {
   };
   return (
     <View style={{flex: 1, backgroundColor: '#FFFFFF'}}>
-      <Loader loading={loading} />
-      <Message modalVisible={modalVisible} modalStatus={Toggle} />
+      { tablet == 'false' &&
+      <OrientationLocker
+        orientation={PORTRAIT}
+      />
+    }
+    { tablet == 'true' &&
+      <OrientationLocker
+        orientation={LANDSCAPE}
+      />
+    }
+     
+     <Loader loading={loading} />
+     <Snackbar
+        visible={visible}
+        onDismiss={onDismissSnackBar}
+        duration={3000}
+        >
+        Datos actualizados con exito!!!.
+      </Snackbar>
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
@@ -275,6 +287,7 @@ const SettingsScreen =  (props) => {
             </Button>
         </KeyboardAvoidingView>
       </ScrollView>
+ 
     </View>
   );
 };

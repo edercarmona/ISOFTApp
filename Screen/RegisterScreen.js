@@ -1,4 +1,4 @@
-import React, {useState, createRef} from 'react';
+import React, {useState, createRef, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -10,7 +10,9 @@ import {
   ScrollView,
 } from 'react-native';
 
-import { Button, TextInput } from 'react-native-paper';
+import { Button, TextInput, Snackbar } from 'react-native-paper';
+import { OrientationLocker, PORTRAIT, LANDSCAPE } from "react-native-orientation-locker";
+import AsyncStorage from '@react-native-community/async-storage';
 
 import Loader from './Components/Loader';
 
@@ -26,12 +28,32 @@ const RegisterScreen = (props) => {
     isRegistraionSuccess,
     setIsRegistraionSuccess
   ] = useState(false);
-
+  const [tablet, setTablet] = useState('');
   const emailInputRef = createRef();
   const nameInputRef = createRef();
   const direInputRef = createRef();
   const passwordInputRef = createRef();
   const phoneInputRef = createRef();
+  const [visible, setVisible] = React.useState(false);
+
+  const onToggleSnackBar = () => setVisible(!visible);
+
+  const onDismissSnackBar = () => {
+    setVisible(false);
+    props.navigation.navigate('LoginScreen');
+  }
+
+
+  useEffect(() => {
+    const unsubscribe = props.navigation.addListener('focus', () => {
+      isTablet();
+    });
+    return unsubscribe;
+  },[props.navigation])
+
+  const isTablet = async () => {
+    setTablet(await AsyncStorage.getItem('istablet'));
+  };
 
   const handleSubmitButton = () => {
     setErrortext('');
@@ -93,6 +115,7 @@ const RegisterScreen = (props) => {
         }else{
           if (responseJson.success == true) {
             setIsRegistraionSuccess(true);
+            onToggleSnackBar();
           } else {
             setErrortext(responseJson.message);
           }
@@ -103,42 +126,22 @@ const RegisterScreen = (props) => {
         console.error(error);
       });
   };
-  if (isRegistraionSuccess) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: '#ffffff',
-          justifyContent: 'center',
-        }}>
-        <Image
-          source={require('../Image/logo.png')}
-          style={{
-            height: 150,
-            resizeMode: 'contain',
-            alignSelf: 'center'
-          }}
-        />
-        <Text style={styles.successTextStyle}>
-         Registro Exitoso!!!
-        </Text>
-        <TouchableOpacity
-          style={styles.buttonStyle}
-          activeOpacity={0.5}
-          onPress={() => props.navigation.navigate('LoginScreen')}>
-          <Text style={styles.buttonTextStyle}>Inicar Sesion</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
   return (
     <View style={{flex: 1, backgroundColor: '#FFFFFF'}}>
+      <Snackbar
+        visible={visible}
+        onDismiss={onDismissSnackBar}
+        duration={3000}
+        >
+        Usuario Registrado con exito!!!.
+      </Snackbar>
       <Loader loading={loading} />
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
           justifyContent: 'center',
           alignContent: 'center',
+          flex: 1,
         }}>
         <View style={{alignItems: 'center'}}>
           <Image
@@ -248,6 +251,13 @@ const RegisterScreen = (props) => {
 export default RegisterScreen;
 
 const styles = StyleSheet.create({
+
+  mainBody: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    alignContent: 'center',
+  },
   SectionStyle: {
     flexDirection: 'row',
     height: 60,

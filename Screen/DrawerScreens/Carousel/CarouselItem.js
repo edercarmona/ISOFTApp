@@ -7,7 +7,6 @@ import styles from './styles';
 
 function CarouselItem({ item, index }, parallaxProps) {
   return (
-    <Pressable onPress={() => alert('Image description:' + item.prize.description)}>
       <Card>
         <Card.Title title={item.prize_name} subtitle={item.prize_points+" puntos"} />
         <Card.Cover source={{ uri: item.prize_image}} />
@@ -15,7 +14,6 @@ function CarouselItem({ item, index }, parallaxProps) {
           <Paragraph>{item.prize_description}</Paragraph>
         </Card.Content>
       </Card>
-    </Pressable>
   );
 }
 

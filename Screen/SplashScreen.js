@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Image
 } from 'react-native';
+import { isTablet, getDeviceType } from 'react-native-device-info';
 
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -13,6 +14,7 @@ const SplashScreen = ({navigation}) => {
 
   useEffect(() => {
     setTimeout(() => {
+      AsyncStorage.setItem('istablet', isTablet().toString());
       setAnimating(false);
       AsyncStorage.getItem('token').then((value) =>
         navigation.replace(

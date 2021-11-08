@@ -2,6 +2,7 @@ import React, {useState, createRef, useEffect, setState} from 'react';
 import { View, ScrollView, Image } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Divider, Title,   Paragraph, Card} from 'react-native-paper';
+import { OrientationLocker, PORTRAIT, LANDSCAPE } from "react-native-orientation-locker";
 import Moment from 'moment';
 
 
@@ -19,11 +20,13 @@ const PromotionScreen =  (props) => {
   const [endDate, setEndDate] = useState('');
   const [description, setDescription] = useState('');
   const [rule, setRule] = useState('');
+  const [tablet, setTablet] = useState('');
 
   useEffect(() => {
     Moment.locale('es');
     const unsubscribe = props.navigation.addListener('focus', () => {
       readData();
+      isTablet();
     });
     return unsubscribe;
   },[props.navigation])
@@ -56,7 +59,7 @@ const PromotionScreen =  (props) => {
           setEndDate(responseJson[0].promotion_enddate);
           setDescription(responseJson[0].promotion_description);
           setRule(responseJson[0].rule[0].rule_description);
-           setLoading(false);
+          setLoading(false);
          }
        }
      )
@@ -66,8 +69,22 @@ const PromotionScreen =  (props) => {
      });
    }
 
+   const isTablet = async () => {
+    setTablet(await AsyncStorage.getItem('istablet'));
+  };
+
   return (
     <View >
+      { tablet == 'false' &&
+      <OrientationLocker
+        orientation={PORTRAIT}
+      />
+    }
+    { tablet == 'true' &&
+      <OrientationLocker
+        orientation={LANDSCAPE}
+      />
+    }
       <ScrollView>
       <Loader loading={loading} />
       <Image

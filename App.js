@@ -1,20 +1,24 @@
 import 'react-native-gesture-handler';
-
-
-import React from 'react';
+import React, { useEffect} from 'react';
 
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 
+
 import SplashScreen from './Screen/SplashScreen';
 import LoginScreen from './Screen/LoginScreen';
 import RegisterScreen from './Screen/RegisterScreen';
 import DrawerNavigationRoutes from './Screen/DrawerNavigationRoutes';
+import { Alert } from 'react-native';
+
 
 const Stack = createStackNavigator();
 
+
 const Auth = () => {
+  
+
   return (
     <Stack.Navigator initialRouteName="LoginScreen">
       <Stack.Screen

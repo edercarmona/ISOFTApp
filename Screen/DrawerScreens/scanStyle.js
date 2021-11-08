@@ -119,5 +119,10 @@ const styles = {
         marginTop: 20,
         marginBottom: 25,
       },
+      errorTextStyle: {
+        color: 'red',
+        textAlign: 'center',
+        fontSize: 14,
+      },
 }
 export default styles;
