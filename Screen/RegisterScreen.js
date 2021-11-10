@@ -28,7 +28,6 @@ const RegisterScreen = (props) => {
     isRegistraionSuccess,
     setIsRegistraionSuccess
   ] = useState(false);
-  const [tablet, setTablet] = useState('');
   const emailInputRef = createRef();
   const nameInputRef = createRef();
   const direInputRef = createRef();
@@ -42,18 +41,6 @@ const RegisterScreen = (props) => {
     setVisible(false);
     props.navigation.navigate('LoginScreen');
   }
-
-
-  useEffect(() => {
-    const unsubscribe = props.navigation.addListener('focus', () => {
-      isTablet();
-    });
-    return unsubscribe;
-  },[props.navigation])
-
-  const isTablet = async () => {
-    setTablet(await AsyncStorage.getItem('istablet'));
-  };
 
   const handleSubmitButton = () => {
     setErrortext('');
@@ -128,6 +115,7 @@ const RegisterScreen = (props) => {
   };
   return (
     <View style={{flex: 1, backgroundColor: '#FFFFFF'}}>
+      
       <Snackbar
         visible={visible}
         onDismiss={onDismissSnackBar}

@@ -1,5 +1,5 @@
 import React, {useState, createRef, useEffect, setState} from 'react';
-import {View, Text, SafeAreaView, Image} from 'react-native';
+import {View, Text, SafeAreaView, Image, ScrollView} from 'react-native';
 import { Avatar, Card, Paragraph, Title, Button, Divider } from 'react-native-paper';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { OrientationLocker, PORTRAIT, LANDSCAPE } from "react-native-orientation-locker";
@@ -121,6 +121,7 @@ const HomeScreen = (props) => {
       />
     }
     <Loader loading={loading} />
+    <ScrollView>
       <View style={{flex: 1}}>
       <Card>
       <Card.Cover 
@@ -175,6 +176,7 @@ const HomeScreen = (props) => {
           www.servigaseolo.com.mx
         </Text>          
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

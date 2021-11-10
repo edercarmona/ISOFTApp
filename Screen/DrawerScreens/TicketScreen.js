@@ -40,14 +40,17 @@ const TicketScreen =  (props) => {
     return unsubscribe;
   },[props.navigation])
 
-  const onSuccess = (e) => {
-    const check = e.data.substring(0, 4);
-    console.log('scanned data' + check);
+  const onSuccess =  (e) => {
     setResult(e);
-    setScan(false);
-    setScanResult(true);
     console.log(result.data)
-    setNumTicket(result.data);
+    if (!result.data){
+      scanner.reactivate ();
+    }else{
+      setScan(false);
+      setScanResult(true);
+      setNumTicket(result.data);
+    }
+
   };
 
   const isTablet = async () => {
@@ -197,6 +200,7 @@ const TicketScreen =  (props) => {
                     reactivate={true}
                     showMarker={true}
                     cameraStyle={{ height: 400 }}
+                    showMarker={true}
                     containerStyle={{height:400}}
                     ref={(node) => { scanner = node }}
                     onRead={onSuccess}

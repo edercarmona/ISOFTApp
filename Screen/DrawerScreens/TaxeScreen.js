@@ -14,21 +14,19 @@ import { OrientationLocker, PORTRAIT, LANDSCAPE } from "react-native-orientation
 import Loader from '../Components/Loader';
 
 const SettingsScreen =  (props) => {
-  const [user_name, setUserName] = useState('');
-  const [user_email, setUserEmail] = useState('');
-  const [user_password, setUserPassword] = useState('');
-  const [user_phone, setUserPhone] = useState('');
-  const [user_dire, setUserDire] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [taxe_email, setTaxeEmail] = useState('');
+  const [taxe_rfc, setTaxeRFC] = useState('');
+  const [taxe_company, setTaxeCompany] = useState('');
   const [tablet, setTablet] = useState('');
+  const [fetchurl, setURL] = useState('');
+  const [loading, setLoading] = useState(false);
   const [visible, setVisible] = React.useState(false);
+  const [istaxe, setIsTaxe] = React.useState(false);
   const [errortext, setErrortext] = useState('');
 
   const emailInputRef = createRef();
-  const nameInputRef = createRef();
-  const direInputRef = createRef();
-  const phoneInputRef = createRef();
-  const passwordInputRef = createRef();
+  const rfcInputRef = createRef();
+  const companyInputRef = createRef();
 
   const onToggleSnackBar = () => setVisible(!visible);
 
@@ -36,11 +34,10 @@ const SettingsScreen =  (props) => {
 
   useEffect(() => {
     const unsubscribe = props.navigation.addListener('focus', () => {
-      setUserName('');
-      setUserEmail('');
-      setUserDire('');
-      setUserPhone('');
-      setUserPassword('');
+      setTaxeEmail('');
+      setTaxeRFC('');
+      setTaxeCompany('');
+      setIsTaxe(false);
       readData();
       isTablet();
     });
@@ -55,13 +52,12 @@ const SettingsScreen =  (props) => {
     setLoading(true);
   const userToken = await AsyncStorage.getItem('token');
   const userEmail = await AsyncStorage.getItem('user_id');
-  var url = new URL("http://23.96.1.110/api/show_user");
+  var url = new URL("http://23.96.1.110/api/get_taxes");
   var params = {
     token: userToken,
     user_email: userEmail,
   }
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-  console.log(url);
   fetch(url, {
     method: 'GET',
     headers: {
@@ -74,11 +70,13 @@ const SettingsScreen =  (props) => {
       console.log(responseJson);
         if (responseJson.success == false) {
           console.log(responseJson);
+          setIsTaxe(false);
+          setLoading(false);
         } else {
-          setUserName(responseJson.user_name);
-          setUserEmail(responseJson.user_email);
-          setUserPhone(responseJson.user_phone);
-          setUserDire(responseJson.user_dire);
+          setTaxeEmail(responseJson.taxe_email);
+          setTaxeRFC(responseJson.taxe_rfc);
+          setTaxeCompany(responseJson.taxe_company);
+          setIsTaxe(true);
           setLoading(false);
         }
       }
@@ -93,35 +91,28 @@ const SettingsScreen =  (props) => {
     const userToken = await AsyncStorage.getItem('token');
     const userEmail = await AsyncStorage.getItem('user_id');
     setErrortext('');
-    if (!user_name) {
-      setErrortext('Por favor introduzca su nombre');
+    if (!taxe_email) {
+      setErrortext('Por favor introduzca email de facturacion');
       return;
     }
-    if (!user_email) {
-      setErrortext('Por favor introduzca su email');
+    if (!taxe_rfc) {
+      setErrortext('Por favor introduzca un RFC');
       return;
     }
-    if (!user_phone) {
-      setErrortext('Por favor introduzca su número de telefono');
-      return;
-    }
-    if (!user_dire) {
-      setErrortext('Por favor introduzca su dirección');
-      return;
-    }
-    if (!user_password) {
-      setErrortext('Por favor introduzca su contraseña');
+    if (!taxe_company) {
+      setErrortext('Por favor introduzca su nombre o razon social');
       return;
     }
     //Show Loader
     setLoading(true);
+    console.log(taxe_rfc);
     var dataToSend = {
       token: userToken,
-      user_name: user_name,
-      user_email: user_email,
-      user_phone: user_phone,
-      user_dire: user_dire,
-      user_password: user_password,
+      user_email: userEmail,
+      taxe_rfc: taxe_rfc,
+      taxe_user: userEmail,
+      taxe_email: taxe_email,
+      taxe_company: taxe_company,
     };
     var formBody = [];
     for (var key in dataToSend) {
@@ -130,8 +121,12 @@ const SettingsScreen =  (props) => {
       formBody.push(encodedKey + '=' + encodedValue);
     }
     formBody = formBody.join('&');
-
-    fetch('http://23.96.1.110/api/update_user', {
+    if (istaxe){
+      var url = "http://23.96.1.110/api/update_taxes";
+    }else{
+      var url = "http://23.96.1.110/api/taxes";
+    }
+    fetch(url, {
       method: 'POST',
       body: formBody,
       headers: {
@@ -143,9 +138,12 @@ const SettingsScreen =  (props) => {
       .then((responseJson) => {
         setLoading(false);
         console.log(responseJson);
-        console.log(tablet);
         if( responseJson.hasOwnProperty('error') ) {
-            setErrortext('Su contraseña debe tener almenos 6 caracteres');
+          if( responseJson.error.hasOwnProperty('taxe_rfc') ) {
+            setErrortext('RFC Incorrecto');
+          }else {
+            setErrortext('Error al actualizar el registro');
+          }
         }else{
           if (responseJson.success == true) {
             onToggleSnackBar();
@@ -183,7 +181,6 @@ const SettingsScreen =  (props) => {
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
-          flex: 1,
           justifyContent: 'center',
           alignContent: 'center',
         }}>
@@ -193,16 +190,15 @@ const SettingsScreen =  (props) => {
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(user_email) => setUserEmail(user_email)}
+              onChangeText={(taxe_email) => setTaxeEmail(taxe_email)}
               keyboardType="email-address"
               ref={emailInputRef}
               returnKeyType="next"
-              value={user_email}
+              value={taxe_email}
               onSubmitEditing={() =>
                 emailInputRef.current && emailInputRef.current.focus()
               }
               blurOnSubmit={false}
-              editable={false}
               mode="outlined"
               label="Email"
             />
@@ -210,68 +206,34 @@ const SettingsScreen =  (props) => {
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(user_name) => setUserName(user_name)}
+              onChangeText={(taxe_company) => setTaxeCompany(taxe_company)}
               autoCapitalize="sentences"
               returnKeyType="next"
-              value={user_name}
+              value={taxe_company}
               onSubmitEditing={() =>
-                nameInputRef.current &&
-                nameInputRef.current.focus()
+                companyInputRef.current &&
+                companyInputRef.current.focus()
               }
               blurOnSubmit={false}
               mode="outlined"
-              label="Nombre"
+              label="Nombre o Razon Social"
             />
           </View>
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(user_password) => setUserPassword(user_password) }
-              ref={passwordInputRef}
+              onChangeText={(taxe_rfc) => setTaxeRFC(taxe_rfc) }
+              ref={rfcInputRef}
               returnKeyType="next"
-              secureTextEntry={true}
-              value={user_password}
+              autoCapitalize="characters"
+              value={taxe_rfc}
               onSubmitEditing={() =>
-                passwordInputRef.current &&
-                passwordInputRef.current.focus()
+                rfcInputRef.current &&
+                rfcInputRef.current.focus()
               }
               blurOnSubmit={false}
               mode="outlined"
-              label="Contraseña"
-            />
-          </View>
-          <View style={styles.SectionStyle}>
-            <TextInput
-              style={styles.inputStyle}
-              onChangeText={(user_phone) => setUserPhone(user_phone)}
-              keyboardType="numeric"
-              ref={phoneInputRef}
-              returnKeyType="next"
-              value={user_phone}
-              onSubmitEditing={() =>
-                phoneInputRef.current &&
-                phoneInputRef.current.focus()
-              }
-              blurOnSubmit={false}
-              mode="outlined"
-              label="Telefono"
-            />
-          </View>
-          <View style={styles.SectionStyle}>
-            <TextInput
-              style={styles.inputStyle}
-              onChangeText={(user_dire) => setUserDire(user_dire)}
-              autoCapitalize="sentences"
-              ref={direInputRef}
-              returnKeyType="next"
-              value={user_dire}
-              onSubmitEditing={() =>
-                direInputRef.current &&
-                direInputRef.current.focus()
-              }
-              blurOnSubmit={false}
-              mode="outlined"
-              label="Direccion"
+              label="RFC"
             />
           </View>
           {errortext != '' ? (
@@ -279,9 +241,11 @@ const SettingsScreen =  (props) => {
               {errortext}
             </Text>
           ) : null}
-
             <Button icon="content-save" mode="contained" onPress={handleSubmitButton} style={styles.buttonStyle}>
             Guardar Cambios            
+            </Button>
+            <Button icon="content-save" mode="contained" onPress={handleSubmitButton} style={styles.buttonStyle}>
+            Facturar            
             </Button>
             <Button icon="window-close" mode="contained" onPress={() => props.navigation.navigate('HomeScreen')} style={styles.buttonStyle}>
             Cancelar            

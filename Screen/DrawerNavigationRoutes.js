@@ -9,12 +9,61 @@ import HomeScreen from './DrawerScreens/HomeScreen';
 import PromotionScreen from './DrawerScreens/PromotionScreen';
 import SettingsScreen from './DrawerScreens/SettingsScreen';
 import TicketScreen from './DrawerScreens/TicketScreen';
+import PrizeScreen from './DrawerScreens/PrizeScreen';
+import TaxeScreen from './DrawerScreens/TaxeScreen';
 import CustomSidebarMenu from './Components/CustomSidebarMenu';
 import NavigationDrawerHeader from './Components/NavigationDrawerHeader';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
+const taxeScreenStack = ({navigation}) => {
+  return (
+    <Stack.Navigator initialRouteName="TaxeScreen">
+      <Stack.Screen
+        name="TaxeScreen"
+        component={TaxeScreen}
+        options={{
+          title: 'Facturacion',
+          headerLeft: () => (
+            <NavigationDrawerHeader navigationProps={navigation} />
+          ),
+          headerStyle: {
+            backgroundColor: '#307ecc', 
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const prizeScreenStack = ({navigation}) => {
+  return (
+    <Stack.Navigator initialRouteName="TicketScreen">
+      <Stack.Screen
+        name="PrizeScreen"
+        component={PrizeScreen}
+        options={{
+          title: 'Premios',
+          headerLeft: () => (
+            <NavigationDrawerHeader navigationProps={navigation} />
+          ),
+          headerStyle: {
+            backgroundColor: '#307ecc', 
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+    </Stack.Navigator>
+  );
+};
 
 const ticketScreenStack = ({navigation}) => {
   return (
@@ -139,9 +188,9 @@ const DrawerNavigatorRoutes = (props) => {
         component={promotionScreenStack}
       />
       <Drawer.Screen
-        name="premiosScreenStack"
+        name="prizeScreenStack"
         options={{drawerLabel: 'Premios'}}
-        component={homeScreenStack}
+        component={prizeScreenStack}
       />
       <Drawer.Screen
         name="ticketScreenStack"
@@ -149,9 +198,9 @@ const DrawerNavigatorRoutes = (props) => {
         component={ticketScreenStack}
       />
       <Drawer.Screen
-        name="facturacionScreenStack"
+        name="taxeScreenStack"
         options={{drawerLabel: 'Factuarcion'}}
-        component={homeScreenStack}
+        component={taxeScreenStack}
       />
       <Drawer.Screen
         name="settingScreenStack"

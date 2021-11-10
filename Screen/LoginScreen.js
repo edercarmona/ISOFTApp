@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
+
 import { Button, TextInput } from 'react-native-paper';
 import AsyncStorage from '@react-native-community/async-storage';
 import { OrientationLocker, PORTRAIT, LANDSCAPE } from "react-native-orientation-locker";
@@ -23,21 +24,11 @@ const LoginScreen = ({navigation}) => {
   const [user_password, setUserPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errortext, setErrortext] = useState('');
-  const [tablet, setTablet] = useState('');
-
+  
   const passwordInputRef = createRef();
 
 
-  const isTablet = async () => {
-    setTablet(await AsyncStorage.getItem('istablet'));
-  };
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      isTablet();
-    });
-    return unsubscribe;
-  },[navigation])
+  
 
   const handleSubmitPress = () => {
     setErrortext('');
@@ -96,16 +87,6 @@ const LoginScreen = ({navigation}) => {
   return (
     
     <View style={styles.mainBody}>
-      { tablet == 'false' &&
-      <OrientationLocker
-        orientation={PORTRAIT}
-      />
-    }
-    { tablet == 'true' &&
-      <OrientationLocker
-        orientation={PORTRAIT}
-      />
-    }
       <Loader loading={loading} />
       <ScrollView
         keyboardShouldPersistTaps="handled"
