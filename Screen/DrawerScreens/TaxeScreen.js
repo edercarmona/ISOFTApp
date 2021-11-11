@@ -244,9 +244,9 @@ const SettingsScreen =  (props) => {
             <Button icon="content-save" mode="contained" onPress={handleSubmitButton} style={styles.buttonStyle}>
             Guardar Cambios            
             </Button>
-            <Button icon="content-save" mode="contained" onPress={handleSubmitButton} style={styles.buttonStyle}>
+            {/*<Button icon="content-save" mode="contained" onPress={handleSubmitButton} style={styles.buttonStyle}>
             Facturar            
-            </Button>
+          </Button> */}
             <Button icon="window-close" mode="contained" onPress={() => props.navigation.navigate('HomeScreen')} style={styles.buttonStyle}>
             Cancelar            
             </Button>

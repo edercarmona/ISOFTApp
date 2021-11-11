@@ -16,7 +16,7 @@ const Message = (props) => {
     }}>
      <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Cambios realizados con éxito!!!</Text>
+            <Text style={styles.modalText}>EL modulo de Facturacion aun no eta disponible</Text>
             <Button icon="check" mode="contained" onPress={() => props.modalStatus()} style={styles.buttonStyle}>
             Aceptar            
             </Button>
